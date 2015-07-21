@@ -150,21 +150,29 @@ int main(void)
 	LoggingInterval500MS_SRAM = eeprom_read_byte(&LoggingInterval500MS_EEPROM);
 
 	/* Check if the logging interval is invalid (0xFF) indicating that the EEPROM is blank */
-	if (LoggingInterval500MS_SRAM == 0xFF)
-	  LoggingInterval500MS_SRAM = DEFAULT_LOG_INTERVAL;
+	//if (LoggingInterval500MS_SRAM == 0xFF)
+	  //LoggingInterval500MS_SRAM = DEFAULT_LOG_INTERVAL;
 
 	// TODO: This isn't necessary any more
 	/* Mount and open the log file on the Dataflash FAT partition */
 	//OpenLogFile();
 
-	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
-	GlobalInterruptEnable();
+	//LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
+	//GlobalInterruptEnable();
 
+	unsigned char i;
 	for (;;)
 	{
-		MS_Device_USBTask(&Disk_MS_Interface);
-		HID_Device_USBTask(&Generic_HID_Interface);
-		USB_USBTask();
+		//MS_Device_USBTask(&Disk_MS_Interface);
+		//HID_Device_USBTask(&Generic_HID_Interface);
+		//USB_USBTask();
+		// TODO: See if I can do this with (1 << PC7) | PORTC and ~(1 << PC7) & PORTC
+		i = (PINC & (1<<PINC2));
+		if( i == 1) {
+			PORTC = (1<<PC7) | (1<<PC2);
+		} else {
+			PORTC = (1<< PC2);
+		}
 	}
 }
 
@@ -208,18 +216,23 @@ void SetupHardware(void)
 
 	/* Hardware Initialization */
 	LEDs_Init();
-	ADC_Init(ADC_FREE_RUNNING | ADC_PRESCALE_128);
-	Temperature_Init();
+	//ADC_Init(ADC_FREE_RUNNING | ADC_PRESCALE_128); // Analog-to-Digital converter not used here.
+	//Temperature_Init(); // Temperature not used here.
 	// TODO: Don't need this, but maybe need SPI initialization
 	//Dataflash_Init();
-	USB_Init();
-	TWI_Init(TWI_BIT_PRESCALE_4, TWI_BITLENGTH_FROM_FREQ(4, 50000));
-	RTC_Init();
+	//USB_Init();
+	//TWI_Init(TWI_BIT_PRESCALE_4, TWI_BITLENGTH_FROM_FREQ(4, 50000)); // Don't need this right now.
+	//RTC_Init();
 
 	/* 500ms logging interval timer configuration */
 	OCR1A   = (((F_CPU / 256) / 2) - 1);
 	TCCR1B  = (1 << WGM12) | (1 << CS12);
 	TIMSK1  = (1 << OCIE1A);
+
+	// Set PC2 as input, for the jumper
+	// Set PC7 as high output, for the LED
+	PORTC = (1<<PC7) || (1<<PC2);
+	DDRC = (1<<DDC7);
 
 	// TODO: Possibly similar check for SPI initialization
 	/* Check if the Dataflash is working, abort if not */
@@ -294,21 +307,22 @@ bool CALLBACK_MS_Device_SCSICommandReceived(USB_ClassInfo_MS_Device_t* const MSI
  *
  *  \return Boolean \c true to force the sending of the report, \c false to let the library determine if it needs to be sent
  */
-bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
-                                         uint8_t* const ReportID,
-                                         const uint8_t ReportType,
-                                         void* ReportData,
-                                         uint16_t* const ReportSize)
-{
-	Device_Report_t* ReportParams = (Device_Report_t*)ReportData;
+// Removed the HID callback; I will want MS Storage and Serial eventually.
+//bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
+                                         //uint8_t* const ReportID,
+                                         //const uint8_t ReportType,
+                                         //void* ReportData,
+                                         //uint16_t* const ReportSize)
+//{
+	//Device_Report_t* ReportParams = (Device_Report_t*)ReportData;
 
-	RTC_GetTimeDate(&ReportParams->TimeDate);
+	//RTC_GetTimeDate(&ReportParams->TimeDate);
 
-	ReportParams->LogInterval500MS = LoggingInterval500MS_SRAM;
+	//ReportParams->LogInterval500MS = LoggingInterval500MS_SRAM;
 
-	*ReportSize = sizeof(Device_Report_t);
-	return true;
-}
+	//*ReportSize = sizeof(Device_Report_t);
+	//return true;
+//}
 
 /** HID class driver callback function for the processing of HID reports from the host.
  *
@@ -318,21 +332,22 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
  *  \param[in] ReportData  Pointer to a buffer where the received report has been stored
  *  \param[in] ReportSize  Size in bytes of the received HID report
  */
-void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
-                                          const uint8_t ReportID,
-                                          const uint8_t ReportType,
-                                          const void* ReportData,
-                                          const uint16_t ReportSize)
-{
-	Device_Report_t* ReportParams = (Device_Report_t*)ReportData;
+// Removed the HID callback; I will want MS Storage and Serial eventually.
+//void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
+                                          //const uint8_t ReportID,
+                                          //const uint8_t ReportType,
+                                          //const void* ReportData,
+                                          //const uint16_t ReportSize)
+//{
+	//Device_Report_t* ReportParams = (Device_Report_t*)ReportData;
 
-	RTC_SetTimeDate(&ReportParams->TimeDate);
+	//RTC_SetTimeDate(&ReportParams->TimeDate);
 
 	/* If the logging interval has changed from its current value, write it to EEPROM */
-	if (LoggingInterval500MS_SRAM != ReportParams->LogInterval500MS)
-	{
-		LoggingInterval500MS_SRAM = ReportParams->LogInterval500MS;
-		eeprom_update_byte(&LoggingInterval500MS_EEPROM, LoggingInterval500MS_SRAM);
-	}
-}
+	//if (LoggingInterval500MS_SRAM != ReportParams->LogInterval500MS)
+	//{
+		//LoggingInterval500MS_SRAM = ReportParams->LogInterval500MS;
+		//eeprom_update_byte(&LoggingInterval500MS_EEPROM, LoggingInterval500MS_SRAM);
+	//}
+//}
 

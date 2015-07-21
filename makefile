@@ -11,15 +11,15 @@
 
 # Run "make help" for target help.
 
-MCU          = at90usb1287
+MCU          = atmega16u2
 ARCH         = AVR8
-BOARD        = USBKEY
+BOARD        = NONE
 F_CPU        = 8000000
 F_USB        = $(F_CPU)
 OPTIMIZATION = s
 TARGET       = NanoBoard
-SRC          = $(TARGET).c Descriptors.c Lib/RTC.c Lib/SCSI.c \
-               $(LUFA_SRC_USB) $(LUFA_SRC_USBCLASS) $(LUFA_SRC_SERIAL) $(LUFA_SRC_TWI) $(LUFA_SRC_TEMPERATURE)
+SRC          = $(TARGET).c Lib/SCSI.c \
+               #$(LUFA_SRC_USB) $(LUFA_SRC_USBCLASS) $(LUFA_SRC_SERIAL) $(LUFA_SRC_TWI) $(LUFA_SRC_TEMPERATURE)
 LUFA_PATH    = ../../LUFA
 CC_FLAGS     = -DUSE_LUFA_CONFIG_HEADER -IConfig/
 LD_FLAGS     =

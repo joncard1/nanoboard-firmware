@@ -46,13 +46,13 @@
 		#include "Descriptors.h"
 
 		#include "Lib/SCSI.h"
-		#include "Lib/RTC.h"
+		//#include "Lib/RTC.h" // Disabled temporarily until we figure out how to get the RTC working.
 		#include "Config/AppConfig.h"
 
 		#include <LUFA/Drivers/Board/LEDs.h>
-		#include <LUFA/Drivers/Board/Temperature.h>
-		#include <LUFA/Drivers/Peripheral/ADC.h>
-		#include <LUFA/Drivers/USB/USB.h>
+		//#include <LUFA/Drivers/Board/Temperature.h>
+		//#include <LUFA/Drivers/Peripheral/ADC.h>
+		//#include <LUFA/Drivers/USB/USB.h>
 		#include <LUFA/Platform/Platform.h>
 
 	/* Macros: */
@@ -80,8 +80,8 @@
 	/* Type Defines: */
 		typedef struct
 		{
-			TimeDate_t TimeDate;
-			uint8_t    LogInterval500MS;
+		//	TimeDate_t TimeDate;	// This was disabled because the RTC was removed
+		//	uint8_t    LogInterval500MS;
 		} Device_Report_t;
 
 	/* Function Prototypes: */

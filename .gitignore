@@ -1,0 +1,14 @@
+Descriptors.d
+Descriptors.o
+Lib/SCSI.d
+Lib/SCSI.o
+NanoBoard.bin
+NanoBoard.d
+NanoBoard.eep
+NanoBoard.elf
+NanoBoard.hex
+NanoBoard.lss
+NanoBoard.map
+NanoBoard.o
+NanoBoard.sym
+TemperatureDataLogger.txt
